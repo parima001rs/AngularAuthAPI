@@ -20,6 +20,15 @@ namespace UserAuth.Controllers
             return Ok(await _context.Devices.ToListAsync());
         }
 
+        [HttpGet("{custId}")]
+        public async Task<IActionResult> GetDevicesbyId(string custId)
+        {
+            var devices = await _context.Devices
+                                        .Where(d => d.CustId == custId)
+                                        .ToListAsync();
+            return Ok(devices);
+        }
+
         [HttpPost]
         public async Task<ActionResult<Device>> PostDevice(Device device)
         {
