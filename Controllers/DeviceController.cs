@@ -29,6 +29,7 @@ namespace UserAuth.Controllers
             return Ok(devices);
         }
 
+        /*
         [HttpPost]
         public async Task<ActionResult<Device>> PostDevice(Device device)
         {
@@ -36,6 +37,21 @@ namespace UserAuth.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(await _context.Devices.ToListAsync());
+        }
+        */
+
+        [HttpPost("registerDevice")]
+        public async Task<IActionResult> RegisterDevice([FromBody] Device devObj)
+        {
+            if (devObj == null)
+                return BadRequest();
+
+            await _context.Devices.AddAsync(devObj);
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                Message = "Device Registered!"
+            });
         }
 
     }

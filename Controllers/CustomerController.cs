@@ -20,6 +20,7 @@ namespace UserAuth.Controllers
             return Ok(await _context.Customers.ToListAsync());
         }
 
+        /*
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
@@ -27,6 +28,21 @@ namespace UserAuth.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(await _context.Customers.ToListAsync());
+        }
+        */
+
+        [HttpPost("createCustomer")]
+        public async Task<IActionResult> CreateCustomer([FromBody] Customer custObj)
+        {
+            if (custObj == null)
+                return BadRequest();
+
+            await _context.Customers.AddAsync(custObj);
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                Message = "Customer Created!"
+            });
         }
     }
 }
