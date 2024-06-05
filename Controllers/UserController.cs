@@ -134,8 +134,8 @@ namespace UserAuth.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                //Expires = DateTime.Now.AddHours(1),
-                Expires = DateTime.Now.AddSeconds(10),
+                Expires = DateTime.Now.AddHours(1),
+                //Expires = DateTime.Now.AddSeconds(10),
                 SigningCredentials = credentials
             };
 
