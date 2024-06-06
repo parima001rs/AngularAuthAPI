@@ -69,7 +69,6 @@ namespace UserAuth.Controllers
 
             device.StartDate = deviceUpdateDto.StartDate;
             device.EndDate = deviceUpdateDto.EndDate;
-            device.IsPlanActive = deviceUpdateDto.IsPlanActive;
             try
             {
                 await _context.SaveChangesAsync();

@@ -28,7 +28,14 @@ namespace UserAuth.Models
 
         public DateTime? EndDate { get; set; }
 
+        private bool _isPlanActive;
+
         [Required]
-        public bool IsPlanActive { get; set; }
+        public bool IsPlanActive 
+        { 
+            get { return EndDate <= DateTime.UtcNow; }
+            set { _isPlanActive = value; }
+        }
+        
     }
 }
