@@ -11,7 +11,7 @@ namespace UserAuth.Models
         public Guid Id { get; private set; }
 
         [Required]
-        public string DeviceId { get; set; }
+        public Guid DeviceId { get; set; }
 
         [Required]
         public string ApplicationId { get; set; }
