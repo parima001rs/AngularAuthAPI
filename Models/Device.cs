@@ -14,7 +14,7 @@ namespace UserAuth.Models
         public Guid DeviceId { get; set; }
 
         [Required]
-        public string ApplicationId { get; set; }
+        public Guid ApplicationId { get; set; }
 
         [Required]
         [ForeignKey("Customer")]
@@ -28,14 +28,19 @@ namespace UserAuth.Models
 
         public DateTime? EndDate { get; set; }
 
-        private bool _isPlanActive;
-
         [Required]
-        public bool IsPlanActive 
-        { 
-            get { return EndDate <= DateTime.UtcNow; }
-            set { _isPlanActive = value; }
+        public bool IsPlanActive {  get; set; } //status of plan whether active or not 
+
+        public bool IsActive { get; set; } //deletion status false means deleted by default it's true
+
+        /*
+        public Device()
+        {
+            IsActive = true;
+            StartDate = DateTime.UtcNow;
+            EndDate = DateTime.UtcNow.AddDays(30);
         }
+        */
         
     }
 }

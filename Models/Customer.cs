@@ -11,7 +11,7 @@ namespace UserAuth.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string CustomerId { get; private set; }
+        public string CustomerId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -26,13 +26,27 @@ namespace UserAuth.Models
         public Customer()
         {
             Id = Guid.NewGuid();
+            //CustomerId = GenerateUniqueId();
+        }
+        /*
+        public Customer(string name, string email, int allowedResources)
+        {
+            Name = name;
+            Email = email;
+            AllowedResources = allowedResources;
+            Id = Guid.NewGuid();
             CustomerId = GenerateUniqueId();
         }
+        
 
         private string GenerateUniqueId()
         {
+            //string initials = new string(Name.Take(2).ToArray());
+
             return "CUST" + Guid.NewGuid().ToString("N");
+            //return "CUST" + Id.ToString() + initials;
         }
+        */
 
     }
 }

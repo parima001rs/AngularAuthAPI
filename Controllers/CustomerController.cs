@@ -37,6 +37,9 @@ namespace UserAuth.Controllers
             if (custObj == null)
                 return BadRequest();
 
+            string initials = new string(custObj.Name.Take(4).ToArray());
+            custObj.CustomerId = "CUST" + custObj.Id.ToString() + initials;
+
             await _context.Customers.AddAsync(custObj);
             await _context.SaveChangesAsync();
             return Ok(new

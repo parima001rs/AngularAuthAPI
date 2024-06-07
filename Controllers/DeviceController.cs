@@ -26,7 +26,7 @@ namespace UserAuth.Controllers
         public async Task<IActionResult> GetDevicesbyId(string custId)
         {
             var devices = await _context.Devices
-                                        .Where(d => d.CustId == custId)
+                                        .Where(d => d.CustId == custId && d.IsActive)
                                         .ToListAsync();
             return Ok(devices);
         }
@@ -56,8 +56,10 @@ namespace UserAuth.Controllers
             var devices = await _context.Devices.Where(d => d.CustId == device.CustId).ToListAsync();
             if (devices.Count >= customer.AllowedResources)
             {
-                return Ok(new { Message = "Device limit exceeded for this customer." });
+                return Ok(new { Message = $"Device limit exceeded for {customer.Name}" });
             }
+
+            device.EndDate = DateTime.UtcNow.AddDays(30);
 
 
             await _context.Devices.AddAsync(device);
@@ -95,6 +97,32 @@ namespace UserAuth.Controllers
             }
         }
 
+        //changes IsActive to false 
+        [HttpPut("deleteDevice/{deviceId}")]
+        public async Task<IActionResult> deleteDevice(Guid deviceId)
+        {
+            Device device = _context.Devices.Where(a => a.DeviceId == deviceId).FirstOrDefault();
+            //var device = await _context.Devices.FindAsync(deviceId);
+
+            if (device == null)
+            {
+                return NotFound();
+            }
+
+            device.IsActive = false;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(device);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        /*
+         //deletes permanently from db
         [HttpDelete("deleteDevice/{deviceId}")]
         public async Task<ActionResult<List<Device>>> DeleteDevice(Guid deviceId)
         {
@@ -107,8 +135,9 @@ namespace UserAuth.Controllers
 
             return Ok(await _context.Devices.ToListAsync());
         }
+        */
 
-       
+
 
 
     }
