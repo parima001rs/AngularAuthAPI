@@ -59,7 +59,10 @@ namespace UserAuth.Controllers
                 return Ok(new { Message = $"Device limit exceeded for {customer.Name}" });
             }
 
+            device.StartDate = DateTime.Now;
             device.EndDate = DateTime.UtcNow.AddDays(30);
+            device.IsActive = true;
+            device.IsPlanActive = true;
 
 
             await _context.Devices.AddAsync(device);

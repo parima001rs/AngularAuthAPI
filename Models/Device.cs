@@ -28,19 +28,26 @@ namespace UserAuth.Models
 
         public DateTime? EndDate { get; set; }
 
+        private bool _isPlanActive;
+
+
+        //status of plan whether active or not 
         [Required]
-        public bool IsPlanActive {  get; set; } //status of plan whether active or not 
+        public bool IsPlanActive
+        {
+            get
+            {
+                return EndDate >= DateTime.UtcNow;
+            }
+            set
+            {
+                _isPlanActive = value;
+            }
+        }
 
         public bool IsActive { get; set; } //deletion status false means deleted by default it's true
 
-        /*
-        public Device()
-        {
-            IsActive = true;
-            StartDate = DateTime.UtcNow;
-            EndDate = DateTime.UtcNow.AddDays(30);
-        }
-        */
+       
         
     }
 }

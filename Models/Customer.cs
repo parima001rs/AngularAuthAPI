@@ -29,16 +29,6 @@ namespace UserAuth.Models
             //CustomerId = GenerateUniqueId();
         }
         /*
-        public Customer(string name, string email, int allowedResources)
-        {
-            Name = name;
-            Email = email;
-            AllowedResources = allowedResources;
-            Id = Guid.NewGuid();
-            CustomerId = GenerateUniqueId();
-        }
-        
-
         private string GenerateUniqueId()
         {
             //string initials = new string(Name.Take(2).ToArray());
