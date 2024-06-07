@@ -21,7 +21,8 @@ namespace UserAuth.Models
         [EmailAddress]
         [StringLength(100)]
         public string Email { get; set; }
-
+        [Required]
+        public int AllowedResources { get; set; }
         public Customer()
         {
             Id = Guid.NewGuid();

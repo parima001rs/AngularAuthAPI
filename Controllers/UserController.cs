@@ -76,7 +76,14 @@ namespace UserAuth.Controllers
 
             //Check Username
             if (await CheckUserNameExistAsync(userObj.Username))
-                return BadRequest(new { Message = "Username Already Exist!" });
+            {
+                return Ok(new
+                {
+                    Message = "Username Already Exist!",
+                    Status = false
+                });
+            }
+                //return BadRequest(new { Message = "Username Already Exist!" });
 
             //Check Email
             if (await CheckEmailExistAsync(userObj.Email))
@@ -95,7 +102,9 @@ namespace UserAuth.Controllers
             await _authContext.SaveChangesAsync();
             return Ok(new
             {
-                Message = "User Registered!"
+                Message = "User Registered!",
+                Status = true
+
             });
         }
 
