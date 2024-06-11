@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UserAuth.Controllers
@@ -14,10 +15,11 @@ namespace UserAuth.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetCustomers()
         {
-            return Ok(await _context.Customers.ToListAsync());
+            return Ok(await _context.Customers.Where(c => c.IsActive).ToListAsync());
         }
 
         /*
@@ -39,6 +41,8 @@ namespace UserAuth.Controllers
 
             string initials = new string(custObj.Name.Take(4).ToArray());
             custObj.CustomerId = "CUST" + custObj.Id.ToString() + initials;
+
+            custObj.IsActive = true;
 
             await _context.Customers.AddAsync(custObj);
             await _context.SaveChangesAsync();

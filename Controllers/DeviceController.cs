@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserAuth.Models;
 using UserAuth.Models.Dto;
@@ -16,12 +17,14 @@ namespace UserAuth.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetDevices()
         {
             return Ok(await _context.Devices.ToListAsync());
         }
 
+        [Authorize]
         [HttpGet("{custId}")]
         public async Task<IActionResult> GetDevicesbyId(string custId)
         {
@@ -89,6 +92,8 @@ namespace UserAuth.Controllers
 
             device.StartDate = deviceUpdateDto.StartDate;
             device.EndDate = deviceUpdateDto.EndDate;
+            device.ModifiedOn = DateTime.UtcNow;
+
             try
             {
                 await _context.SaveChangesAsync();

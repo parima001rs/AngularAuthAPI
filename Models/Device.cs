@@ -10,6 +10,11 @@ namespace UserAuth.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; private set; }
 
+        public Guid CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public Guid ModifiedBy { get; set; }
+        public DateTime ModifiedOn { get; set; }
+
         [Required]
         public Guid DeviceId { get; set; }
 

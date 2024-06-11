@@ -8,6 +8,11 @@ namespace UserAuth.Models
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; private set; }
+        public Guid CreatedBy {  get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public Guid ModifiedBy { get; set; }
+        public DateTime ModifiedOn { get; set; }
+
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,6 +28,8 @@ namespace UserAuth.Models
         public string Email { get; set; }
         [Required]
         public int AllowedResources { get; set; }
+
+        public bool IsActive { get; set; }
         public Customer()
         {
             Id = Guid.NewGuid();
