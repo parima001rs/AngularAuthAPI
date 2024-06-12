@@ -7,8 +7,7 @@ namespace UserAuth.Models
     public class Device
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; private set; }
+        public int Id { get; set; }
 
         public Guid CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;

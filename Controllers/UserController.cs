@@ -80,7 +80,6 @@ namespace UserAuth.Controllers
                 return Ok(new
                 {
                     Message = "Username Already Exist!",
-                    Status = false
                 });
             }
                 //return BadRequest(new { Message = "Username Already Exist!" });
@@ -103,7 +102,6 @@ namespace UserAuth.Controllers
             return Ok(new
             {
                 Message = "User Registered!",
-                Status = true
 
             });
         }

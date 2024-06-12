@@ -20,10 +20,18 @@ namespace UserAuth.Context
             modelBuilder.Entity<Customer>().ToTable("customers");
             modelBuilder.Entity<Device>().ToTable("devices");
 
+            /*
             modelBuilder.Entity<Device>()
                 .HasOne(cd => cd.Customer)
                 .WithMany()
                 .HasForeignKey(cd => cd.CustId);
+            */
+
+            modelBuilder.Entity<Device>()
+                .HasOne(d => d.Customer)
+                .WithMany(c => c.Devices)
+                .HasForeignKey(d => d.CustId)
+                .HasPrincipalKey(c => c.CustomerId);
         }
-    }
+}
 }

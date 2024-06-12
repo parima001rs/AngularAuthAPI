@@ -24,9 +24,11 @@ namespace UserAuth.Migrations
 
             modelBuilder.Entity("UserAuth.Models.Customer", b =>
                 {
-                    b.Property<string>("CustomerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("AllowedResources")
                         .HasColumnType("int");
@@ -37,14 +39,14 @@ namespace UserAuth.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -60,16 +62,21 @@ namespace UserAuth.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("CustomerId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
 
                     b.ToTable("customers", (string)null);
                 });
 
             modelBuilder.Entity("UserAuth.Models.Device", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<Guid>("ApplicationId")
                         .HasColumnType("uniqueidentifier");
@@ -161,12 +168,18 @@ namespace UserAuth.Migrations
             modelBuilder.Entity("UserAuth.Models.Device", b =>
                 {
                     b.HasOne("UserAuth.Models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Devices")
                         .HasForeignKey("CustId")
+                        .HasPrincipalKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("UserAuth.Models.Customer", b =>
+                {
+                    b.Navigation("Devices");
                 });
 #pragma warning restore 612, 618
         }

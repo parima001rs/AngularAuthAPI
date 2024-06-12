@@ -34,8 +34,52 @@ namespace UserAuth.Controllers
             return Ok(devices);
         }
 
-       
+        [HttpPost("registerDevice")]
+        public async Task<IActionResult> PostDevice([FromBody] Device device)
+        {
+            if (device == null)
+            {
+                return BadRequest("Device object is null");
+            }
 
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid model object");
+            }
+            
+            //new stuff
+            //var customer = await _context.Customers.FindAsync(device.CustId);
+            var customer = await _context.Customers.Where(c => c.CustomerId == device.CustId).FirstOrDefaultAsync();
+            if (customer == null)
+            {
+                return NotFound("Customer not found");
+            }
+            
+
+            var devices = await _context.Devices.Where(d => d.CustId == device.CustId).ToListAsync();
+            if (devices.Count >= customer.AllowedResources)
+            {
+                return Ok(new { Message = $"Device limit exceeded for {customer.Name}" });
+            }
+
+            device.StartDate = DateTime.Now;
+            device.EndDate = DateTime.UtcNow.AddDays(30);
+            device.IsActive = true;
+            device.IsPlanActive = true;
+
+
+            await _context.Devices.AddAsync(device);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetDevicesbyId",
+                new
+                {
+                    custId = device.CustId
+                }, new { Message = "New Device Registered Successfully!", Device = device });
+        }
+
+        /*
         [HttpPost("registerDevice")]
         public async Task<IActionResult> PostDevice([FromBody] Device device)
         {
@@ -76,7 +120,7 @@ namespace UserAuth.Controllers
                     custId = device.CustId
                     }, new { Message = "New Device Registered Successfully!", Device = device });
         }
-
+        */
 
         // PUT api/devices/f7f4c885-0dbd-46fd-b13f-543f25363859
         [HttpPut("updateDevice/{deviceId}")]

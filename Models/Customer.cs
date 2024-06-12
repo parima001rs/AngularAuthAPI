@@ -1,21 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace UserAuth.Models
 {
+    [Index(nameof(Customer.CustomerId), IsUnique = true)]
     public class Customer
     {
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; private set; }
+        [Key]
+        public int Id { get; set; }
+
         public Guid CreatedBy {  get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;
         public Guid ModifiedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
-
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string CustomerId { get; set; }
 
         [Required]
@@ -30,20 +28,10 @@ namespace UserAuth.Models
         public int AllowedResources { get; set; }
 
         public bool IsActive { get; set; }
-        public Customer()
-        {
-            Id = Guid.NewGuid();
-            //CustomerId = GenerateUniqueId();
-        }
-        /*
-        private string GenerateUniqueId()
-        {
-            //string initials = new string(Name.Take(2).ToArray());
+        
+        [JsonIgnore]
+        public ICollection<Device> Devices { get; set; }
 
-            return "CUST" + Guid.NewGuid().ToString("N");
-            //return "CUST" + Id.ToString() + initials;
-        }
-        */
 
     }
 }
