@@ -8,6 +8,7 @@ namespace UserAuth.Models
     public class Customer
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public Guid CreatedBy {  get; set; }
@@ -31,6 +32,8 @@ namespace UserAuth.Models
         
         [JsonIgnore]
         public ICollection<Device> Devices { get; set; }
+
+       
 
 
     }

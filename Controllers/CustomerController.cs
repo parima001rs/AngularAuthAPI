@@ -39,12 +39,15 @@ namespace UserAuth.Controllers
             if (custObj == null)
                 return BadRequest();
 
+            int lastExistingCustomerId = await _context.Customers.MaxAsync(c => c.Id);
+            int newId = lastExistingCustomerId + 1;
+
             string initials = new string(custObj.Name.Take(4).ToArray());
-            custObj.CustomerId = "CUST" + custObj.Id.ToString() + initials;
+            custObj.CustomerId = "CUST" + newId.ToString() + initials;
 
             custObj.IsActive = true;
 
-            await _context.Customers.AddAsync(custObj);
+            await _context.Customers.AddAsync(custObj); 
             await _context.SaveChangesAsync();
             return Ok(new
             {
