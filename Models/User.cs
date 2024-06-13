@@ -6,6 +6,7 @@ namespace UserAuth.Models
     {
         [Key]
         public int Id { get; set; }
+        public Guid UserId { get; set; }
         public string? FirstName { get; set; }   
         public string? LastName { get; set; }
         public string? Username { get; set; }
@@ -17,5 +18,10 @@ namespace UserAuth.Models
         public DateTime RefreshTokenExpiryTime { get; set; }
         public string? ResetPasswordToken { get; set; }
         public DateTime ResetPasswordExpiry { get; set; }
+
+        public User()
+        {
+            UserId = Guid.NewGuid();
+        }
     }
 }

@@ -137,6 +137,7 @@ namespace UserAuth.Controllers
             device.StartDate = deviceUpdateDto.StartDate;
             device.EndDate = deviceUpdateDto.EndDate;
             device.ModifiedOn = DateTime.UtcNow;
+            device.ModifiedBy = deviceUpdateDto.ModifiedBy;
 
             try
             {

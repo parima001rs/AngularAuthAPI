@@ -46,6 +46,7 @@ namespace UserAuth.Controllers
             custObj.CustomerId = "CUST" + newId.ToString() + initials;
 
             custObj.IsActive = true;
+            custObj.CreatedBy = custObj.CreatedBy;
 
             await _context.Customers.AddAsync(custObj); 
             await _context.SaveChangesAsync();
