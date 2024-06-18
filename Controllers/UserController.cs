@@ -77,7 +77,7 @@ namespace UserAuth.Controllers
             //Check Username
             if (await CheckUserNameExistAsync(userObj.Username))
             {
-                return Ok(new
+                return BadRequest(new
                 {
                     Message = "Username Already Exist!",
                 });

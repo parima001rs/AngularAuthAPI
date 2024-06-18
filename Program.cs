@@ -35,6 +35,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 //Token
 builder.Services.AddAuthentication(x =>

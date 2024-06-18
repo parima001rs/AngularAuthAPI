@@ -1,6 +1,6 @@
 ﻿namespace UserAuth.Models.Dto
 {
-    public class DeviceDeleteDto
+    public class CustomerDeleteDto
     {
         public Guid Modifiedby { get; set; }
     }

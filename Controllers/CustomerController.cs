@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using UserAuth.Models;
+using UserAuth.Models.Dto;
 
 namespace UserAuth.Controllers
 {
@@ -22,16 +24,6 @@ namespace UserAuth.Controllers
             return Ok(await _context.Customers.Where(c => c.IsActive).ToListAsync());
         }
 
-        /*
-        [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
-        {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-
-            return Ok(await _context.Customers.ToListAsync());
-        }
-        */
 
         [HttpPost("createCustomer")]
         public async Task<IActionResult> CreateCustomer([FromBody] Customer custObj)
@@ -55,6 +47,57 @@ namespace UserAuth.Controllers
                 Message = "Customer Created!"
             });
         }
-        
+
+        [HttpPut("updateCustomer/{customerId}")]
+        public async Task<IActionResult> UpdateCustomer(string customerId, [FromBody] CustomerUpdateDto customerUpdateDto)
+        {
+            Customer customer = _context.Customers.Where(a => a.CustomerId == customerId).FirstOrDefault();
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            customer.Name = customerUpdateDto.Name;
+            customer.Email = customerUpdateDto.Email;
+            customer.AllowedResources = customerUpdateDto.AllowedResources;
+            customer.ModifiedOn = DateTime.Now;
+            customer.ModifiedBy = customerUpdateDto.ModifiedBy;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+
+        }
+
+        [HttpPut("deleteCustomer/{customerId}")]
+        public async Task<IActionResult> deleteCustomer(string customerId, CustomerDeleteDto customerDeleteDto)
+        {
+            Customer customer = _context.Customers.Where(a => a.CustomerId == customerId).FirstOrDefault();
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            customer.IsActive = false;
+            customer.ModifiedBy = customerDeleteDto.Modifiedby;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
     }
 }
