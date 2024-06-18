@@ -25,7 +25,9 @@ namespace UserAuth.Models
         [EmailAddress]
         [StringLength(100)]
         public string Email { get; set; }
+
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter a valid integer Number greater than 0")]
         public int AllowedResources { get; set; }
 
         public bool IsActive { get; set; }
