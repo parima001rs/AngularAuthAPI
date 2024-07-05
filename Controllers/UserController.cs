@@ -21,19 +21,23 @@ namespace UserAuth.Controllers
         private readonly AppDbContext _authContext;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly ILogger<UserController> _logger;
 
         [ActivatorUtilitiesConstructor]
-        public UserController(AppDbContext context, IConfiguration configuration, IEmailService emailService)
+        public UserController(AppDbContext context, IConfiguration configuration, IEmailService emailService, ILogger<UserController> logger)
         {
             _authContext = context;
             _configuration = configuration;
             _emailService = emailService;
+            _logger = logger;
         }   
 
         public UserController(AppDbContext appDbContext)
         {
             _authContext = appDbContext;
         }
+
+       
 
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] User userObj)
@@ -56,7 +60,7 @@ namespace UserAuth.Controllers
             var newAccessToken = user.Token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(5);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(5);
             await _authContext.SaveChangesAsync(); //save tokens in db
 
             return Ok(new TokenApiDto()
@@ -142,8 +146,7 @@ namespace UserAuth.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.Now.AddHours(1),
-                //Expires = DateTime.Now.AddSeconds(10),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = credentials
             };
 
@@ -175,7 +178,8 @@ namespace UserAuth.Controllers
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateLifetime = false
+                ValidateLifetime = false,
+                ClockSkew = TimeSpan.Zero //added stuff
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
@@ -187,13 +191,14 @@ namespace UserAuth.Controllers
             }
             return principal;
         }
-
+        /*
         [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> GetAllUsers()
         {
             return Ok(await _authContext.Users.ToListAsync()); ;
         }
+        */
 
         //will give new access token
         [HttpPost("refresh")]
@@ -206,7 +211,7 @@ namespace UserAuth.Controllers
             var principal = GetPrincipleFromExpiredToken(accessToken);
             var username = principal.Identity.Name;
             var user = await _authContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
                 return BadRequest("Invalid Request");
             var newAccessToken = CreateJwt(user);
             var newRefreshToken = CreateRefreshToken();
@@ -235,7 +240,7 @@ namespace UserAuth.Controllers
             var tokenBytes = RandomNumberGenerator.GetBytes(64);
             var emailToken = Convert.ToBase64String(tokenBytes);
             user.ResetPasswordToken = emailToken;
-            user.ResetPasswordExpiry = DateTime.Now.AddMinutes(15);
+            user.ResetPasswordExpiry = DateTime.UtcNow.AddMinutes(15);
             string from = _configuration["EmailSettings:From"];
             var emailModel = new EmailModel(email, "Reset Password!!", EmailBody.EmailStringBody(email, emailToken));
             _emailService.SendEmail(emailModel);
@@ -265,7 +270,7 @@ namespace UserAuth.Controllers
             }
             var tokenCode = user.ResetPasswordToken;
             DateTime emailTokenExpiry = user.ResetPasswordExpiry;
-            if(tokenCode != resetPasswordDto.EmailToken || emailTokenExpiry < DateTime.Now)
+            if(tokenCode != resetPasswordDto.EmailToken || emailTokenExpiry < DateTime.UtcNow)
             {
                 return BadRequest(new
                 {

@@ -34,6 +34,17 @@ namespace UserAuth.Controllers
             return Ok(devices);
         }
 
+        [Authorize]
+        [HttpGet("getbyDevId/{deviceId}")]
+        public async Task<IActionResult> GetDevicesbyDeviceId(Guid deviceId)
+        {
+            var devices = await _context.Devices
+                                        .Where(d => d.DeviceId == deviceId && d.IsActive)
+                                        .ToListAsync();
+            return Ok(devices);
+        }
+
+        /*
         [HttpPost("registerDevice")]
         public async Task<IActionResult> PostDevice([FromBody] Device device)
         {
@@ -63,8 +74,8 @@ namespace UserAuth.Controllers
                 return Ok(new { Message = $"Device limit exceeded for {customer.Name}" });
             }
 
-            device.StartDate = DateTime.Now;
-            device.EndDate = DateTime.Now.AddDays(30);
+            device.StartDate = DateTime.UtcNow;
+            device.EndDate = DateTime.UtcNow.AddDays(30);
             device.IsActive = true;
             device.IsPlanActive = true;
 
@@ -78,8 +89,57 @@ namespace UserAuth.Controllers
                     custId = device.CustId
                 }, new { Message = "New Device Registered Successfully!", Device = device });
         }
+        */
+        [HttpPost("registerDevice")]
+        public async Task<IActionResult> PostDevice([FromBody] Device device)
+        {
+            if (device == null)
+            {
+                return BadRequest(new { Message = "Device object is null", startDate = (DateTime?)null, endDate = (DateTime?)null, isPlanActive = (bool?)null, isActive = (bool?)null });
+            }
 
-    
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { Message = "Invalid model object", startDate = (DateTime?)null, endDate = (DateTime?)null, isPlanActive = (bool?)null, isActive = (bool?)null });
+            }
+
+            // Check if the device ID already exists
+            var existingDevice = await _context.Devices.Where(d => d.DeviceId == device.DeviceId).FirstOrDefaultAsync();
+            if (existingDevice != null)
+            {
+                return BadRequest(new { Message = "Device ID already exists", startDate = (DateTime?)null, endDate = (DateTime?)null, isPlanActive = (bool?)null, isActive = (bool?)null });
+            }
+
+            var customer = await _context.Customers.Where(c => c.CustomerId == device.CustId).FirstOrDefaultAsync();
+            if (customer == null)
+            {
+                return NotFound(new { Message = "Customer not found", startDate = (DateTime?)null, endDate = (DateTime?)null, isPlanActive = (bool?)null, isActive = (bool?)null });
+            }
+
+            var devices = await _context.Devices.Where(d => d.CustId == device.CustId).ToListAsync();
+            var activeDevices = await _context.Devices.Where(d => d.CustId == device.CustId && d.IsActive).ToListAsync();
+            if (activeDevices.Count >= customer.AllowedResources)
+            {
+                return BadRequest(new { Message = $"Device limit exceeded for {customer.Name}", startDate = (DateTime?)null, endDate = (DateTime?)null, isPlanActive = (bool?)null, isActive = (bool?)null });
+            }
+
+            device.StartDate = DateTime.UtcNow;
+            device.EndDate = DateTime.UtcNow.AddDays(30);
+            device.IsActive = true;
+            device.IsPlanActive = true;
+
+            await _context.Devices.AddAsync(device);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetDevicesbyId",
+                new
+                {
+                    custId = device.CustId
+                }, new { Message = "New Device Registered Successfully!", startDate = device.StartDate, endDate = device.EndDate, isPlanActive = device.IsPlanActive, isActive = device.IsActive });
+        }
+
+
+
 
         // PUT api/devices/f7f4c885-0dbd-46fd-b13f-543f25363859
         [HttpPut("updateDevice/{deviceId}")]
@@ -93,15 +153,21 @@ namespace UserAuth.Controllers
                 return NotFound();
             }
 
+
             device.StartDate = deviceUpdateDto.StartDate;
             device.EndDate = deviceUpdateDto.EndDate;
-            device.ModifiedOn = DateTime.Now;
+            device.ModifiedOn = DateTime.UtcNow;
             device.ModifiedBy = deviceUpdateDto.ModifiedBy;
+
 
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(device);
+                //return Ok(device);
+                return Ok(new
+                {
+                    Message = "Device is successfully updated!"
+                });
             }
             catch (Exception ex)
             {
@@ -122,12 +188,16 @@ namespace UserAuth.Controllers
             }
 
             device.IsActive = false;
-            device.ModifiedOn = DateTime.Now;
+            device.ModifiedOn = DateTime.UtcNow;
             device.ModifiedBy = deviceDeleteDto.Modifiedby;
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(device);
+                //return Ok(device);
+                return Ok(new
+                {
+                    Message = "Device is successfully deleted!"
+                });
             }
             catch (Exception ex)
             {

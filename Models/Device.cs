@@ -10,7 +10,7 @@ namespace UserAuth.Models
         public int Id { get; set; }
 
         public Guid CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public Guid ModifiedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
 

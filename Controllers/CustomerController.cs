@@ -31,7 +31,7 @@ namespace UserAuth.Controllers
             if (custObj == null)
                 return BadRequest();
 
-            int lastExistingCustomerId = await _context.Customers.MaxAsync(c => c.Id);
+            int lastExistingCustomerId = await _context.Customers.DefaultIfEmpty().MaxAsync(c => c.Id);
             int newId = lastExistingCustomerId + 1;
 
             string initials = new string(custObj.Name.Take(4).ToArray());
@@ -61,13 +61,17 @@ namespace UserAuth.Controllers
             customer.Name = customerUpdateDto.Name;
             customer.Email = customerUpdateDto.Email;
             customer.AllowedResources = customerUpdateDto.AllowedResources;
-            customer.ModifiedOn = DateTime.Now;
+            customer.ModifiedOn = DateTime.UtcNow;
             customer.ModifiedBy = customerUpdateDto.ModifiedBy;
 
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(customer);
+                //return Ok(customer);
+                return Ok(new
+                {
+                    Message = "Customer is successfully updated!"
+                });
             }
             catch (Exception ex)
             {
@@ -91,7 +95,11 @@ namespace UserAuth.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(customer);
+                //return Ok(customer);
+                return Ok(new
+                {
+                    Message = "Customer is successfully deleted!"
+                });
             }
             catch (Exception ex)
             {
