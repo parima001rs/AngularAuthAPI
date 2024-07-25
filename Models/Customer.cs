@@ -29,6 +29,8 @@ namespace UserAuth.Models
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Please enter a valid integer Number greater than 0")]
         public int AllowedResources { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
 
         public bool IsActive { get; set; }
         

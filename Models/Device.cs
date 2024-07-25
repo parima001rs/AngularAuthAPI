@@ -15,10 +15,10 @@ namespace UserAuth.Models
         public DateTime ModifiedOn { get; set; }
 
         [Required]
-        public Guid DeviceId { get; set; }
+        public string DeviceId { get; set; }
 
         [Required]
-        public Guid ApplicationId { get; set; }
+        public string ApplicationId { get; set; }
 
         [Required]
         [ForeignKey("Customer")]
@@ -37,7 +37,7 @@ namespace UserAuth.Models
 
         //status of plan whether active or not 
         [Required]
-        public bool IsPlanActive
+        public bool IsPlanActive 
         {
             get
             {
@@ -48,6 +48,7 @@ namespace UserAuth.Models
                 _isPlanActive = value;
             }
         }
+        
 
         public bool IsActive { get; set; } //deletion status false means deleted by default it's true
 
